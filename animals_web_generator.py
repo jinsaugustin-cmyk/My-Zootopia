@@ -2,7 +2,7 @@ import json
 
 
 def load_data(file_path):
-    """Loads a JSON file"""
+    """Loads a JSON file."""
     with open(file_path, "r") as handle:
         return json.load(handle)
 
@@ -11,20 +11,16 @@ def serialize_animal(animal_obj):
     """Converts one animal object into HTML."""
     output = ""
 
-    # Start animal card
     output += '<li class="cards__item">\n'
 
-    # Animal name
     if "name" in animal_obj:
         output += (
             f'<div class="card__title">{animal_obj["name"]}</div>\n'
         )
 
-    # Start animal details
     output += '<div class="card__text">\n'
     output += '<ul class="card__details">\n'
 
-    # Diet
     if "diet" in animal_obj["characteristics"]:
         output += (
             f'<li class="card__detail">'
@@ -33,7 +29,6 @@ def serialize_animal(animal_obj):
             f'</li>\n'
         )
 
-    # Location
     if "locations" in animal_obj and animal_obj["locations"]:
         output += (
             f'<li class="card__detail">'
@@ -42,7 +37,6 @@ def serialize_animal(animal_obj):
             f'</li>\n'
         )
 
-    # Type
     if "type" in animal_obj["characteristics"]:
         output += (
             f'<li class="card__detail">'
@@ -51,7 +45,6 @@ def serialize_animal(animal_obj):
             f'</li>\n'
         )
 
-    # Bonus: Lifespan
     if "lifespan" in animal_obj["characteristics"]:
         output += (
             f'<li class="card__detail">'
@@ -60,7 +53,6 @@ def serialize_animal(animal_obj):
             f'</li>\n'
         )
 
-    # Bonus: Weight
     if "weight" in animal_obj["characteristics"]:
         output += (
             f'<li class="card__detail">'
@@ -69,7 +61,6 @@ def serialize_animal(animal_obj):
             f'</li>\n'
         )
 
-    # Bonus: Skin Type
     if "skin_type" in animal_obj["characteristics"]:
         output += (
             f'<li class="card__detail">'
@@ -78,7 +69,6 @@ def serialize_animal(animal_obj):
             f'</li>\n'
         )
 
-    # Close animal details and card
     output += "</ul>\n"
     output += "</div>\n"
     output += "</li>\n"
@@ -86,30 +76,62 @@ def serialize_animal(animal_obj):
     return output
 
 
-# Read JSON data
+# Load animal data
 animals_data = load_data("animals_data.json")
 
 
-# Generate HTML for all animals
+# >>> NEW: Create a set for unique skin types
+skin_types = set()
+
+
+# >>> NEW: Collect available skin types
+for animal_obj in animals_data:
+    characteristics = animal_obj.get("characteristics", {})
+
+    if "skin_type" in characteristics:
+        skin_types.add(characteristics["skin_type"])
+
+
+# >>> NEW: Display available skin types
+print("Available skin types:")
+
+for skin_type in sorted(skin_types):
+    print(skin_type)
+
+
+# >>> NEW: Ask the user for a skin type
+selected_skin_type = input("Enter a skin type: ")
+
+
+# Generate HTML
 output = ""
 
 for animal_obj in animals_data:
-    output += serialize_animal(animal_obj)
-# TEMPORARY CHECK
+
+    # >>> NEW: Get characteristics safely
+    characteristics = animal_obj.get("characteristics", {})
+
+    # >>> NEW: Only serialize matching animals
+    if characteristics.get("skin_type") == selected_skin_type:
+        output += serialize_animal(animal_obj)
+
+
+# Optional temporary check
 print(output)
+
 
 # Read HTML template
 with open("animals_template.html", "r") as file:
     html_template = file.read()
 
 
-# Replace placeholder with generated animal HTML
+# Replace placeholder with animal HTML
 new_html = html_template.replace(
     "__REPLACE_ANIMALS_INFO__",
     output,
 )
 
 
-# Create final HTML file
+# Write final HTML file
 with open("animals.html", "w") as file:
     file.write(new_html)
