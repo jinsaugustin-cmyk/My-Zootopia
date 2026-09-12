@@ -7,51 +7,109 @@ def load_data(file_path):
         return json.load(handle)
 
 
-animals_data = load_data("animals_data.json")
-# PART 2: CREATE STRING WITH ANIMAL INFORMATION
-output = ""
+def serialize_animal(animal_obj):
+    """Converts one animal object into HTML."""
+    output = ""
 
-
-for animal in animals_data:
-    # Start the animal card
+    # Start animal card
     output += '<li class="cards__item">\n'
 
-    # Animal name becomes the card title
-    if "name" in animal:
-        output += f'<div class="card__title">{animal["name"]}</div>\n'
+    # Animal name
+    if "name" in animal_obj:
+        output += (
+            f'<div class="card__title">{animal_obj["name"]}</div>\n'
+        )
 
-    # Start the paragraph containing animal details
-    output += '<p class="card__text">\n'
+    # Start animal details
+    output += '<div class="card__text">\n'
+    output += '<ul class="card__details">\n'
 
-    if "diet" in animal["characteristics"]:
-        output += f'<strong>Diet:</strong> {animal["characteristics"]["diet"]}<br/>\n'
+    # Diet
+    if "diet" in animal_obj["characteristics"]:
+        output += (
+            f'<li class="card__detail">'
+            f'<strong>Diet:</strong> '
+            f'{animal_obj["characteristics"]["diet"]}'
+            f'</li>\n'
+        )
 
-    if "locations" in animal and animal["locations"]:
-        output += f'<strong>Location:</strong> {animal["locations"][0]}<br/>\n'
+    # Location
+    if "locations" in animal_obj and animal_obj["locations"]:
+        output += (
+            f'<li class="card__detail">'
+            f'<strong>Location:</strong> '
+            f'{animal_obj["locations"][0]}'
+            f'</li>\n'
+        )
 
-    if "type" in animal["characteristics"]:
-        output += f'<strong>Type:</strong> {animal["characteristics"]["type"]}<br/>\n'
+    # Type
+    if "type" in animal_obj["characteristics"]:
+        output += (
+            f'<li class="card__detail">'
+            f'<strong>Type:</strong> '
+            f'{animal_obj["characteristics"]["type"]}'
+            f'</li>\n'
+        )
 
-    # Close paragraph
-    output += "</p>\n"
+    # Bonus: Lifespan
+    if "lifespan" in animal_obj["characteristics"]:
+        output += (
+            f'<li class="card__detail">'
+            f'<strong>Lifespan:</strong> '
+            f'{animal_obj["characteristics"]["lifespan"]}'
+            f'</li>\n'
+        )
 
-    # Close animal card
+    # Bonus: Weight
+    if "weight" in animal_obj["characteristics"]:
+        output += (
+            f'<li class="card__detail">'
+            f'<strong>Weight:</strong> '
+            f'{animal_obj["characteristics"]["weight"]}'
+            f'</li>\n'
+        )
+
+    # Bonus: Skin Type
+    if "skin_type" in animal_obj["characteristics"]:
+        output += (
+            f'<li class="card__detail">'
+            f'<strong>Skin Type:</strong> '
+            f'{animal_obj["characteristics"]["skin_type"]}'
+            f'</li>\n'
+        )
+
+    # Close animal details and card
+    output += "</ul>\n"
+    output += "</div>\n"
     output += "</li>\n"
 
+    return output
+
+
+# Read JSON data
+animals_data = load_data("animals_data.json")
+
+
+# Generate HTML for all animals
+output = ""
+
+for animal_obj in animals_data:
+    output += serialize_animal(animal_obj)
+# TEMPORARY CHECK
 print(output)
 
-# Read the existing HTML template
+# Read HTML template
 with open("animals_template.html", "r") as file:
     html_template = file.read()
 
 
-# Replace the placeholder with our animal information
+# Replace placeholder with generated animal HTML
 new_html = html_template.replace(
     "__REPLACE_ANIMALS_INFO__",
-    output
+    output,
 )
 
 
-# Create a new HTML file containing the result
+# Create final HTML file
 with open("animals.html", "w") as file:
     file.write(new_html)
